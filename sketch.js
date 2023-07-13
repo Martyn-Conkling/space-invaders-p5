@@ -2,7 +2,11 @@
 //Check out this free space invaders game to see what the basic space invaders functionality is
 let ship;
 let aliens = [];
+//We are going to set up logic to only be allowed to fire one bullet at a time
 let bullets = [];
+let frameCount = 0;
+let alienMoveFrequency = 12;
+
 
 class Ship {
 constructor(){
@@ -19,7 +23,7 @@ setDir(direction){
     this.direction = direction;
 }
 
-move(direction){
+move(){
     this.x += this.direction * 5;
 }
 }
@@ -44,7 +48,7 @@ class Alien{
   }
   
   move(){
-    this.x = this.x + (this.direction * 2);
+    this.x = this.x + (this.direction * 10);
   }
   
   shiftDown(){
@@ -61,9 +65,6 @@ constructor(x,y){
     this.y = y;
     this.toDelete = false;
 }
-    
-  
-
 show(){
     fill(50, 0, 200);
     ellipse(this.x, this.y, 8, 8);
@@ -83,7 +84,7 @@ hits(alien){
 }
 
 move(){
-    this.y = this.y - 5;
+    this.y = this.y - 10;
 }
 
 }
@@ -91,7 +92,7 @@ move(){
 
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(1000, 500);
   frameRate(24);
   ship = new Ship();
   for (let i = 0; i < 12; i++) {
@@ -101,12 +102,16 @@ function setup() {
 
 function draw() {
   background(0);
+  frameCount++;
   ship.show();
   ship.move();
   
   for (let i = 0; i < bullets.length; i++) {
     bullets[i].show();
     bullets[i].move();
+    if(bullets[i].y < 0){
+      bullets[i].evaporate();
+    }
     for (let j = 0; j < aliens.length; j++) {
       if (bullets[i].hits(aliens[j])) {
         aliens[j].destroy();
@@ -116,20 +121,36 @@ function draw() {
   }
   
   let hitEdge = false;
-  for (let i = 0; i < aliens.length; i++) {
-    aliens[i].show();
-    aliens[i].move();
-    // console.log("moved the aliens")
-    if (aliens[i].x > width || aliens[i].x < 0) {
-      hitEdge = true;
-    }
+
+
+  let moveAliens = false;
+  if(frameCount % alienMoveFrequency === 0){
+    moveAliens = true;
   }
+
+  if(moveAliens){
+
+    for (let i = 0; i < aliens.length; i++) {
+      aliens[i].show();
+      aliens[i].move();
+      // console.log("moved the aliens")
+      if (aliens[i].x > width || aliens[i].x < 0) {
+        hitEdge = true;
+      }
+    }
+
+  } else{
+    for (let i = 0; i < aliens.length; i++) {
+      aliens[i].show();
+    }
+
+  }
+  
 
   if (hitEdge) {
     for (let i = 0; i < aliens.length; i++) {
       aliens[i].shiftDown();
-      
-      
+
     }
   }
 
@@ -147,6 +168,7 @@ function draw() {
   }
 }
 
+//Player Controls Section
 
 function keyReleased() {
   if (key != ' ') {
@@ -156,8 +178,12 @@ function keyReleased() {
 
 function keyPressed() {
   if (key === ' ') {
-    let bullet = new Bullet(ship.x, height);
-    bullets.push(bullet);
+    if(bullets.length === 0){
+      let bullet = new Bullet(ship.x, height);
+      bullets.push(bullet);
+    }
+    
+    
   }
   
   if (keyCode === RIGHT_ARROW) {
