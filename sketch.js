@@ -1,5 +1,8 @@
 // https://freeinvaders.org/
 //Check out this free space invaders game to see what the basic space invaders functionality is
+// https://github.com/benman604/benman604.github.io/blob/v2/sketches/Cubes.js
+
+
 let ship;
 let aliens = [];
 //We are going to set up logic to only be allowed to fire one bullet at a time
@@ -28,6 +31,7 @@ move(){
 }
 }
 
+
 class Alien{
   constructor(x,y){
     this.x = x;
@@ -44,7 +48,7 @@ class Alien{
   }
   
   destroy(){
-    this.toDelete = true;
+    this.toDelete = true;  
   }
   
   move(){
@@ -84,7 +88,7 @@ hits(alien){
 }
 
 move(){
-    this.y = this.y - 10;
+    this.y = this.y - 15;
 }
 
 }
@@ -103,6 +107,8 @@ function setup() {
 function draw() {
   background(0);
   frameCount++;
+
+
   ship.show();
   ship.move();
   
