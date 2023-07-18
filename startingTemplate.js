@@ -1,12 +1,35 @@
+
 // https://freeinvaders.org/
 //Check out this free space invaders game to see what the basic space invaders functionality is
-// https://github.com/benman604/benman604.github.io/blob/v2/sketches/Cubes.js
+
+
+
+class Game{
+  constructor(){
+    // what data should we keep track of for each game?
+     
+  }
+}
+
+class Level{
+  constructor(data){
+    this.levelNumber = data.levelNumber;
+    this.alienMoveFrequency = data.alienMoveFrequency
+    // What are some other important pieces of data we should keep track of for each level?
+  }
+
+}
+
+
+
 
 
 let ship;
 let aliens = [];
-//We are going to set up logic to only be allowed to fire one bullet at a time
+
+//We are going to set up logic to only be allowed to fire one bullet at a time, but you might want to have the option to fire multiple bullets at a time
 let bullets = [];
+
 let frameCount = 0;
 let alienMoveFrequency = 12;
 
@@ -30,7 +53,6 @@ move(){
     this.x += this.direction * 5;
 }
 }
-
 
 class Alien{
   constructor(x,y){
@@ -60,8 +82,6 @@ class Alien{
       this.direction = this.direction * -1;
   }
 }
-
-
 //Need to add more to the bullet code so that I can only shoot 1 bullet at a time
 class Bullet{
 constructor(x,y){
