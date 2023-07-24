@@ -157,6 +157,7 @@ function draw() {
   if(moveAliens){
 
     for (let i = 0; i < aliens.length; i++) {
+      aliens[i].move();
       aliens[i].show();
        // console.log("moved the aliens")
       if (aliens[i].x > width || aliens[i].x < 0) {
