@@ -158,8 +158,7 @@ function draw() {
 
     for (let i = 0; i < aliens.length; i++) {
       aliens[i].show();
-      aliens[i].move();
-      // console.log("moved the aliens")
+       // console.log("moved the aliens")
       if (aliens[i].x > width || aliens[i].x < 0) {
         hitEdge = true;
       }
