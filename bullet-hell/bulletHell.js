@@ -109,6 +109,9 @@ class SuperAlien{
 
   move(){
     this.y += 10;
+    if(this.y > height){
+      this.toDelete = true;
+    }
 
   }
 
@@ -166,6 +169,7 @@ class AlienBullet{
     ellipse(this.x, this.y, 8, 8);
   }
   evaporate(){
+    // console.log("evaporate ran")
     this.toDelete = true;
   }
 
@@ -179,6 +183,8 @@ class AlienBullet{
 
   move(){
     this.y = this.y += 15;
+
+ 
   }
 
 }
@@ -225,7 +231,7 @@ function setup() {
     alienXStart = 60;
     alienYStart = 60;
     
-    numberOfAlienRows = 4;
+    numberOfAlienRows = 1;
     numberOfAlienColumns = 12;
     
     //Creates all of our Aliens
@@ -265,6 +271,7 @@ function setup() {
       }
     }
 
+    //Moves and shows the alien bullets
     for(let i = 0; i < alienBullets.length; i++) {
       alienBullets[i].show();
       alienBullets[i].move();
@@ -274,12 +281,12 @@ function setup() {
     }
     
     let hitEdge = false;
-    let moveAliens = false;
+    let moveAliens = true;
 
   //This if statement controls how many times per second we are moving the aliens
-  if(frameCount % alienMoveFrequency === 0){
-      moveAliens = true;
-  }
+  // if(frameCount % alienMoveFrequency === 0){
+  //     moveAliens = true;
+  // }
 
   // console.log(moveAliens)
 
@@ -320,10 +327,18 @@ function setup() {
         bullets.splice(i, 1);
       }
     }
+
+    // deletes any alien bullets marked to be deleted
+    for (let i = alienBullets.length - 1; i >= 0; i--) {
+      if (alienBullets[i].toDelete) {
+        alienBullets.splice(i, 1);
+      }
+    }
     
   //deletes any aliens marked to be deleted
     for (let i = aliens.length - 1; i >= 0; i--) {
       if (aliens[i].toDelete) {
+        console.log("deleted alien");
         aliens.splice(i, 1);
       }
     }
