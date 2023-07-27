@@ -148,7 +148,7 @@ const keyPressedObject ={
   
   
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(windowWidth -50, windowHeight-70);
     frameRate(24);
 
     //Create the player "ship"
