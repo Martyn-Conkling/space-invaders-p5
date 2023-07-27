@@ -46,7 +46,7 @@ const keyPressedObject ={
   let numberOfAlienColumns;
   
   
-  class Ship {
+class Ship {
   constructor(){
       this.x = width / 2;
       this.y = height -50;
@@ -91,6 +91,7 @@ class SuperAlien{
   constructor(x,y){
     this.x = x;
     this.y = y;
+    this.speed = 7;
 
     this.shootProgramObj = {
       1: true,
@@ -108,7 +109,7 @@ class SuperAlien{
   }
 
   move(){
-    this.y += 10;
+    this.y += this.speed;
     if(this.y > height){
       this.toDelete = true;
     }
@@ -126,7 +127,7 @@ class SuperAlien{
   }
 }
 
-  class Alien{
+class Alien{
     constructor(x,y){
       this.x = x;
       this.y = y;
@@ -189,7 +190,7 @@ class AlienBullet{
 
 }
  
-  class Bullet{
+class Bullet{
   constructor(x,y){
       this.x = x;
       this.y = y;
@@ -217,8 +218,36 @@ class AlienBullet{
       this.y = this.y - 15;
   }
   
-  }
+}
   
+function garbageCollection(){
+    
+  //deletes player bullets
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    if (bullets[i].toDelete) {
+      console.log("deleted player bullets");
+      bullets.splice(i, 1);
+    }
+  }
+
+  // deletes alien bullets
+  for (let i = alienBullets.length - 1; i >= 0; i--) {
+    if (alienBullets[i].toDelete) {
+      console.log("deleted alien bullets");
+      alienBullets.splice(i, 1);
+    }
+  }
+    
+  //deletes aliens
+  for (let i = aliens.length - 1; i >= 0; i--) {
+    if (aliens[i].toDelete) {
+      console.log("deleted alien");
+      aliens.splice(i, 1);
+    }
+  }
+
+}
+
   
 function setup() {
     createCanvas(windowWidth -50, windowHeight-70);
@@ -229,15 +258,15 @@ function setup() {
 
     alienMoveFrequency = 12;
     alienXStart = 60;
-    alienYStart = 60;
+    alienYStart = -500;
     
-    numberOfAlienRows = 1;
+    numberOfAlienRows = 10;
     numberOfAlienColumns = 12;
     
     //Creates all of our Aliens
     for(let rowsIndex = 0; rowsIndex < numberOfAlienRows; rowsIndex++ ){
       for (let i = 0; i <  numberOfAlienColumns ; i++) {
-        aliens.push(new SuperAlien((i * 60) + alienXStart, (alienYStart * rowsIndex) + alienYStart)); 
+        aliens.push(new SuperAlien((i * 60) + alienXStart, (60 * rowsIndex) + alienYStart)); 
       }
     }
     
@@ -305,13 +334,13 @@ function setup() {
         }
       }
   
-    } else{
+    }else{
       for (let i = 0; i < aliens.length; i++) {
         aliens[i].show();
         aliens[i].shoot()
       }
   
-    }
+  };
     
   //Shifts aliens down if we hit the edge
     if (hitEdge) {
@@ -321,33 +350,16 @@ function setup() {
       }
     }
   
-    //deletes any bullets marked to be deleted
-    for (let i = bullets.length - 1; i >= 0; i--) {
-      if (bullets[i].toDelete) {
-        bullets.splice(i, 1);
-      }
-    }
 
-    // deletes any alien bullets marked to be deleted
-    for (let i = alienBullets.length - 1; i >= 0; i--) {
-      if (alienBullets[i].toDelete) {
-        alienBullets.splice(i, 1);
-      }
-    }
+    garbageCollection();
     
-  //deletes any aliens marked to be deleted
-    for (let i = aliens.length - 1; i >= 0; i--) {
-      if (aliens[i].toDelete) {
-        console.log("deleted alien");
-        aliens.splice(i, 1);
-      }
-    }
-  }
-  
-  //Player Controls Section
-  
+}
 
-  function keyReleased() {
+
+
+//Player Controls Section
+
+function keyReleased() {
     console.log("key released");
     switch(keyCode){
       case RIGHT_ARROW:
@@ -365,9 +377,9 @@ function setup() {
         break;
     }
     
-  }
+}
   
-  function keyPressed() {
+function keyPressed() {
     console.log("key pressed");
     if(key === ' '){
       let bullet = new Bullet(ship.x, ship.y);
@@ -395,6 +407,6 @@ function setup() {
 
 
     
-  }
+}
   
   
