@@ -65,6 +65,8 @@ let numberOfAlienRows;
 let numberOfAlienColumns;
   
 // Game Entity classes section  
+// Note, there is currently no effect of ship or alien speed on the bullet velocity
+
 class Ship {
   constructor(){
       this.x = width / 2;
@@ -126,10 +128,25 @@ class SuperAlien{
 
     this.shootProgram = {
       1: true,
-      10: true,
-      12: true,
+      2:true,
+      3:true,
+      4:true,
+      5:true,
+      6:true,
+      7:true,
+      8:true,
+      9:true,
+      10:true,
+      11:true,
+      12:true,
+
+     
       24: true,
       60: true, 
+      61:true,
+      62:true,
+      63:true,
+      64:true,
       100: true,
     }
   }
@@ -186,10 +203,6 @@ class Alien{
       this.x = this.x + (this.direction * 10);
     }
     
-    shiftDown(){
-       this.y = this.y + 60;
-        this.direction = this.direction * -1;
-    }
 
     shoot(){}
 }
@@ -227,26 +240,13 @@ class AlienBullet{
   move(){
     this.x += (this.xDir * this.bulletSpeed)
     this.y += (this.yDir * this.bulletSpeed)
-
-    if(this.deathTimer === frameCount){
-      this.toDelete = true;
-    }
-
  
   }
-
-  
-    // let hyp = dist(this.x, this.y, player.x, player.y);
-    
-    // let absXDif = Math.abs(xDif);
-
-    
-
-
-    
-
-
-  
+  deathTimerCheck(){
+    if(this.deathTimer <= frameCount){
+      this.toDelete = true;
+    }
+  }
 
 // hits(alien){
 //     let d = dist(this.x, this.y, alien.x, alien.y);
@@ -256,8 +256,6 @@ class AlienBullet{
 //     return false;
 // }
 
-  
-
 }
  
 class Bullet{
@@ -266,7 +264,7 @@ class Bullet{
     this.y = y;
     this.toDelete = false;
     this.bulletSpeed = 15;
-    this.bulletDeathTimer = frameCount + 200;
+    this.bulletDeathTimer = frameCount + 300;
 
     //The calculations below will cause the bullet to keep moving towards the mouse x and y position when the bullet was fired
     let xDif = mX - this.x + (random(-10,10))
@@ -302,12 +300,17 @@ class Bullet{
     this.x += (this.xDir * this.bulletSpeed)
     this.y += (this.yDir * this.bulletSpeed)
  
-    if(frameCount === this.bulletDeathTimer){
-      this.toDelete = true;
-    } 
+    
 
       
   }
+
+  deathTimerCheck(){
+    if(this.bulletDeathTimer <= frameCount){
+      this.toDelete = true;
+    } 
+  }
+
   
 }
 
@@ -387,25 +390,14 @@ function draw() {
       }
     }
 
-    //Moves and shows the alien bullets
-    for(let i = 0; i < alienBullets.length; i++) {
-      alienBullets[i].show();
-      alienBullets[i].move();
-      
-    }
     
     let hitEdge = false;
-    let moveAliens = true;
+    // let moveAliens = true;
 
-  //This if statement controls how many times per second we are moving the aliens
-  // if(frameCount % alienMoveFrequency === 0){
-  //     moveAliens = true;
-  // }
-
-  // console.log(moveAliens)
+  
 
 //Moving aliens, and checking if we hit the edge of the canvas
-  if(moveAliens){
+  
       // console.log("moving the aliens")
   
       for (let i = 0; i < aliens.length; i++) {
@@ -413,27 +405,43 @@ function draw() {
         aliens[i].show();
         aliens[i].shoot();
        
-        
+        //edge detection, maybe change the alien direction? or delete it?
         if (aliens[i].x > width || aliens[i].x < 0) {
           hitEdge = true;
         }
       }
-  
+
+    if(frameCount % 269 === 0 ){
+        //Moves and shows the alien bullets
+      for(let i = 0; i < alienBullets.length; i++) {
+        alienBullets[i].show();
+        alienBullets[i].move();
+        alienBullets[i].deathTimerCheck();
+      
+      }
+
     }else{
-      for (let i = 0; i < aliens.length; i++) {
-        aliens[i].show();
-        aliens[i].shoot()
+      for(let i = 0; i < alienBullets.length; i++) {
+        alienBullets[i].show();
+        alienBullets[i].move();
+        
+      
       }
-  
-  };
-    
-  //Shifts aliens down if we hit the edge
-    if (hitEdge) {
-      for (let i = 0; i < aliens.length; i++) {
-        aliens[i].shiftDown();
-  
-      }
+
     }
+    
+    
+  
+  // }else{
+  //     for (let i = 0; i < aliens.length; i++) {
+  //       aliens[i].show();
+  //       aliens[i].shoot()
+  //     }
+  
+  // };
+
+  
+    
   
 
     garbageCollection();
