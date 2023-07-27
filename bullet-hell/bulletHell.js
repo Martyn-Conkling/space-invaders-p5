@@ -1,8 +1,9 @@
 
-// https://freeinvaders.org/
-//Check out this free space invaders game to see what the basic space invaders functionality is
+//This is a basic bullet hell space shooter game engine I am creating in p5.js
+// 
 
-
+//Game State related classes 
+//In Progress
 
 class Game{
     constructor(){
@@ -19,33 +20,31 @@ class Level{
   }
   
 }
-  
-  
-const keyPressedObject ={
-  
+
+
+const keyPressedObject = {
   leftArrowPressed: false,
   rightArrowPressed:false,
   upArrowPressed:false,
   downArrowPressed:false,
 }
   
+let ship;
+let aliens = [];
   
-  let ship;
-  let aliens = [];
-  
-  //We are going to set up logic to only be allowed to fire one bullet at a time, but you might want to have the option to fire multiple bullets at a time
-  let bullets = [];
-  let alienBullets = [];
-  let frameCount = 0;
-  let alienMoveFrequency;
+let bullets = [];
+let alienBullets = [];
 
-  let alienXStart;
-  let alienYStart;
+let frameCount = 0;
+let alienMoveFrequency;
 
-  let numberOfAlienRows;
-  let numberOfAlienColumns;
+let alienXStart;
+let alienYStart;
+
+let numberOfAlienRows;
+let numberOfAlienColumns;
   
-  
+// Game Entity classes section  
 class Ship {
   constructor(){
       this.x = width / 2;
@@ -156,8 +155,8 @@ class Alien{
     }
 
     shoot(){}
-  }
-  //Need to add more to the bullet code so that I can only shoot 1 bullet at a time
+}
+
 class AlienBullet{
 
   constructor(x,y){
@@ -219,7 +218,7 @@ class Bullet{
   }
   
 }
-  
+
 function garbageCollection(){
     
   //deletes player bullets
@@ -248,7 +247,6 @@ function garbageCollection(){
 
 }
 
-  
 function setup() {
     createCanvas(windowWidth -50, windowHeight-70);
     frameRate(48);
@@ -271,9 +269,9 @@ function setup() {
     }
     
 
-  }
+}
   
-  function draw() {
+function draw() {
     background(0);
     frameCount++;
     console.log(frameCount);
@@ -355,10 +353,7 @@ function setup() {
     
 }
 
-
-
 //Player Controls Section
-
 function keyReleased() {
     console.log("key released");
     switch(keyCode){
@@ -367,8 +362,7 @@ function keyReleased() {
         break;
       case LEFT_ARROW:
         keyPressedObject["leftArrowPressed"] = false;
-      break;
-
+        break;
       case UP_ARROW:
         keyPressedObject["upArrowPressed"] = false;
         break;
@@ -390,18 +384,16 @@ function keyPressed() {
     
       case RIGHT_ARROW:
         keyPressedObject["rightArrowPressed"] = true;
-      break;
-
+        break;
       case LEFT_ARROW:
         keyPressedObject["leftArrowPressed"] = true;
-      break;
-
+        break;
       case UP_ARROW:
         keyPressedObject["upArrowPressed"] = true;
         break;
       case DOWN_ARROW:
         keyPressedObject["downArrowPressed"] = true;
-         
+        break;
 
     }    
 
