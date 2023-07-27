@@ -4,18 +4,36 @@
 
 //Game State related classes 
 //In Progress
-
 class Game{
     constructor(){
       // what data should we keep track of for each game?
+      this.playerScore = 0;
+      this.currentLevel = 0;
+
        
     }
+
+    startScreen(){
+
+    }
+
+    loadLevel(){
+
+    }
+
+    gameOver(){
+
+    }
+
+
 }
   
 class Level{
   constructor(data){
-      this.levelNumber = data.levelNumber;
-      this.alienMoveFrequency = data.alienMoveFrequency
+      this.levelID = data.levelID;
+      this.aliensData = data.aliensData;
+
+      // this.alienMoveFrequency = data.alienMoveFrequency
       // What are some other important pieces of data we should keep track of for each level?
   }
   
@@ -28,7 +46,9 @@ const keyPressedObject = {
   upArrowPressed:false,
   downArrowPressed:false,
 }
-  
+
+
+//Global variables, might need refactor
 let ship;
 let aliens = [];
   
@@ -56,16 +76,16 @@ class Ship {
     
   show(){
       fill(255);
-      rectMode(CENTER);
-      rect(this.x, this.y, 40, 50);
+      // ellipseMode(CENTER);
+      ellipse(this.x, this.y, 50, 50);
   }
-  // setXDir(xDir){
-  //     this.xDirection = xDir;
-  // }
-  // setYDir(yDir){
-  //   this.yDirection = yDir;
-  // }
-  //figure out movement logic, so that the ship doesn't get stuck
+  
+  showShield(){
+// I want to make some kind of directional shield, need to figure out vectors for this
+    fill(1,1,250);
+    ellipse(this.x, this.y, 10, 70)
+
+  }
 
   move(){
    if(keyPressedObject.rightArrowPressed){
@@ -84,15 +104,27 @@ class Ship {
   }
   
   
-  }
-  
+}
+
+
+// Abstract out the core Alien class, then extend the class with different custom alien types
+/* 
+All Aliens need to:
+this.moveProgram
+this.shootProgram
+move()
+show()
+shoot()
+
+*/
+
 class SuperAlien{
   constructor(x,y){
     this.x = x;
     this.y = y;
     this.speed = 7;
 
-    this.shootProgramObj = {
+    this.shootProgram = {
       1: true,
       10: true,
       12: true,
@@ -107,10 +139,15 @@ class SuperAlien{
     
   }
 
+  destroy(){
+    this.toDelete = true;
+  }
+
   move(){
     this.y += this.speed;
-    if(this.y > height){
-      this.toDelete = true;
+    if(this.y > height || this.y < -500){
+      // this.toDelete = true;
+      this.speed *= -1;
     }
 
   }
@@ -118,9 +155,9 @@ class SuperAlien{
   shoot(){
     let shootNum = frameCount % 144;
    
-    if(this.shootProgramObj[shootNum]){
+    if(this.shootProgram[shootNum]){
      
-        alienBullets.push(new AlienBullet(this.x, this.y))
+        alienBullets.push(new AlienBullet(this.x, this.y, ship))
 
     }
   }
@@ -159,19 +196,57 @@ class Alien{
 
 class AlienBullet{
 
-  constructor(x,y){
+  constructor(x,y, player){
     this.x = x;
     this.y = y;
     this.toDelete = false;
+    this.bulletSpeed = 15;
+    this.deathTimer = frameCount + 250;
+
+    // Gets some interesting variance behavior based on the random range variance
+    // let xDif = player.x - this.x + (random(-10,10))
+    // let yDif = player.y - this.y + (random(-10,10))
+    let xDif = player.x - this.x 
+    let yDif = player.y - this.y 
+
+    let absDif = Math.abs(xDif) + Math.abs(yDif);
+    this.xDir =   xDif/absDif;
+    this.yDir =   yDif/absDif;
+    console.log(this.xDir)
   }
   show(){
-    fill(50, 0, 100);
-    ellipse(this.x, this.y, 8, 8);
+    fill(150,55,55);
+    ellipse(this.x, this.y, 10, 10);
   }
+
   evaporate(){
     // console.log("evaporate ran")
     this.toDelete = true;
   }
+
+  move(){
+    this.x += (this.xDir * this.bulletSpeed)
+    this.y += (this.yDir * this.bulletSpeed)
+
+    if(this.deathTimer === frameCount){
+      this.toDelete = true;
+    }
+
+ 
+  }
+
+  
+    // let hyp = dist(this.x, this.y, player.x, player.y);
+    
+    // let absXDif = Math.abs(xDif);
+
+    
+
+
+    
+
+
+  
 
 // hits(alien){
 //     let d = dist(this.x, this.y, alien.x, alien.y);
@@ -181,19 +256,29 @@ class AlienBullet{
 //     return false;
 // }
 
-  move(){
-    this.y = this.y += 15;
-
- 
-  }
+  
 
 }
  
 class Bullet{
-  constructor(x,y){
-      this.x = x;
-      this.y = y;
-      this.toDelete = false;
+  constructor(x,y, mX,mY){
+    this.x = x;
+    this.y = y;
+    this.toDelete = false;
+    this.bulletSpeed = 15;
+    this.bulletDeathTimer = frameCount + 200;
+
+    //The calculations below will cause the bullet to keep moving towards the mouse x and y position when the bullet was fired
+    let xDif = mX - this.x + (random(-10,10))
+    let yDif = mY - this.y + (random(-10,10))
+
+    let absDif = Math.abs(xDif) + Math.abs(yDif);
+    this.xDir =   xDif/absDif;
+    this.yDir =   yDif/absDif;
+
+    console.log("bullet x ratio", this.xDir, "bullet y ratio", this.yDir);
+    
+
   }
   show(){
       fill(50, 0, 200);
@@ -214,7 +299,14 @@ class Bullet{
   }
   
   move(){
-      this.y = this.y - 15;
+    this.x += (this.xDir * this.bulletSpeed)
+    this.y += (this.yDir * this.bulletSpeed)
+ 
+    if(frameCount === this.bulletDeathTimer){
+      this.toDelete = true;
+    } 
+
+      
   }
   
 }
@@ -258,8 +350,8 @@ function setup() {
     alienXStart = 60;
     alienYStart = -500;
     
-    numberOfAlienRows = 10;
-    numberOfAlienColumns = 12;
+    numberOfAlienRows = 3;
+    numberOfAlienColumns = 20;
     
     //Creates all of our Aliens
     for(let rowsIndex = 0; rowsIndex < numberOfAlienRows; rowsIndex++ ){
@@ -278,17 +370,14 @@ function draw() {
   
   
     ship.show();
-   
     ship.move();
     
     //Moves Bullets 
     for (let i = 0; i < bullets.length; i++) {
       bullets[i].show();
       bullets[i].move();
-      //checks if the bullet is off the screen
-      if(bullets[i].y < 0){
-        bullets[i].evaporate();
-      }
+    
+      
       //Checks if the bullets have hit any aliens
       for (let j = 0; j < aliens.length; j++) {
         if (bullets[i].hits(aliens[j])) {
@@ -302,9 +391,7 @@ function draw() {
     for(let i = 0; i < alienBullets.length; i++) {
       alienBullets[i].show();
       alienBullets[i].move();
-      if(alienBullets[i].y > height){
-        alienBullets[i].evaporate();
-      }
+      
     }
     
     let hitEdge = false;
@@ -372,14 +459,17 @@ function keyReleased() {
     }
     
 }
+
+function mousePressed(){
   
+    let bullet = new Bullet(ship.x, ship.y, mouseX, mouseY);
+      bullets.push(bullet);
+  
+
+}
 function keyPressed() {
     console.log("key pressed");
-    if(key === ' '){
-      let bullet = new Bullet(ship.x, ship.y);
-        bullets.push(bullet);
-    }
-
+    
     switch(keyCode){
     
       case RIGHT_ARROW:
