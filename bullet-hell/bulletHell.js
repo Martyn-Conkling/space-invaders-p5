@@ -35,7 +35,7 @@ const keyPressedObject ={
   
   //We are going to set up logic to only be allowed to fire one bullet at a time, but you might want to have the option to fire multiple bullets at a time
   let bullets = [];
-  
+  let alienBullets = [];
   let frameCount = 0;
   let alienMoveFrequency;
 
@@ -87,6 +87,42 @@ const keyPressedObject ={
   
   }
   
+class SuperAlien{
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+
+    this.shootProgramObj = {
+      1: true,
+      10: true,
+      12: true,
+      24: true,
+      60: true, 
+      100: true,
+    }
+  }
+  show(){
+    fill(255, 0, 200);
+    ellipse(this.x, this.y, 60, 60);
+    
+  }
+
+  move(){
+    this.y += 10;
+
+  }
+
+  shoot(){
+    let shootNum = frameCount % 144;
+   
+    if(this.shootProgramObj[shootNum]){
+     
+        alienBullets.push(new AlienBullet(this.x, this.y))
+
+    }
+  }
+}
+
   class Alien{
     constructor(x,y){
       this.x = x;
@@ -114,8 +150,39 @@ const keyPressedObject ={
        this.y = this.y + 60;
         this.direction = this.direction * -1;
     }
+
+    shoot(){}
   }
   //Need to add more to the bullet code so that I can only shoot 1 bullet at a time
+class AlienBullet{
+
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+    this.toDelete = false;
+  }
+  show(){
+    fill(50, 0, 100);
+    ellipse(this.x, this.y, 8, 8);
+  }
+  evaporate(){
+    this.toDelete = true;
+  }
+
+// hits(alien){
+//     let d = dist(this.x, this.y, alien.x, alien.y);
+//     if (d < 30) {
+//       return true;   
+//     } 
+//     return false;
+// }
+
+  move(){
+    this.y = this.y += 15;
+  }
+
+}
+ 
   class Bullet{
   constructor(x,y){
       this.x = x;
@@ -149,7 +216,7 @@ const keyPressedObject ={
   
 function setup() {
     createCanvas(windowWidth -50, windowHeight-70);
-    frameRate(24);
+    frameRate(48);
 
     //Create the player "ship"
     ship = new Ship();
@@ -164,7 +231,7 @@ function setup() {
     //Creates all of our Aliens
     for(let rowsIndex = 0; rowsIndex < numberOfAlienRows; rowsIndex++ ){
       for (let i = 0; i <  numberOfAlienColumns ; i++) {
-        aliens.push(new Alien((i * 60) + alienXStart, (alienYStart * rowsIndex) + alienYStart)); 
+        aliens.push(new SuperAlien((i * 60) + alienXStart, (alienYStart * rowsIndex) + alienYStart)); 
       }
     }
     
@@ -197,6 +264,14 @@ function setup() {
         }
       }
     }
+
+    for(let i = 0; i < alienBullets.length; i++) {
+      alienBullets[i].show();
+      alienBullets[i].move();
+      if(alienBullets[i].y > height){
+        alienBullets[i].evaporate();
+      }
+    }
     
     let hitEdge = false;
     let moveAliens = false;
@@ -206,16 +281,18 @@ function setup() {
       moveAliens = true;
   }
 
-  console.log(moveAliens)
+  // console.log(moveAliens)
 
 //Moving aliens, and checking if we hit the edge of the canvas
   if(moveAliens){
-      console.log("moving the aliens")
+      // console.log("moving the aliens")
   
       for (let i = 0; i < aliens.length; i++) {
         aliens[i].move();
         aliens[i].show();
-         // console.log("moved the aliens")
+        aliens[i].shoot();
+       
+        
         if (aliens[i].x > width || aliens[i].x < 0) {
           hitEdge = true;
         }
@@ -224,6 +301,7 @@ function setup() {
     } else{
       for (let i = 0; i < aliens.length; i++) {
         aliens[i].show();
+        aliens[i].shoot()
       }
   
     }
@@ -255,7 +333,7 @@ function setup() {
   
 
   function keyReleased() {
-    
+    console.log("key released");
     switch(keyCode){
       case RIGHT_ARROW:
         keyPressedObject["rightArrowPressed"] = false;
@@ -275,6 +353,7 @@ function setup() {
   }
   
   function keyPressed() {
+    console.log("key pressed");
     if(key === ' '){
       let bullet = new Bullet(ship.x, ship.y);
         bullets.push(bullet);
