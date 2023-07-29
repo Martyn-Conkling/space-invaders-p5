@@ -9,14 +9,14 @@ class Game{
       // what data should we keep track of for each game?
       this.playerScore = 0;
       this.currentLevel = 0;
-
-       
+      
+      
     }
-
+    
     startScreen(){
 
     }
-
+    
     loadLevel(){
 
     }
@@ -35,7 +35,10 @@ class Level{
 
       // this.alienMoveFrequency = data.alienMoveFrequency
       // What are some other important pieces of data we should keep track of for each level?
+      // 
   }
+
+  sendWave(){}
   
 }
 
@@ -66,6 +69,8 @@ let numberOfAlienColumns;
   
 // Game Entity classes section  
 // Note, there is currently no effect of ship or alien speed on the bullet velocity
+// Also need to figure out an optimal way to calculate hit detection on the player from the numerous alien bullets
+
 
 class Ship {
   constructor(){
@@ -128,26 +133,21 @@ class SuperAlien{
 
     this.shootProgram = {
       1: true,
-      2:true,
+     
       3:true,
-      4:true,
+    
       5:true,
-      6:true,
+    
       7:true,
-      8:true,
+     
       9:true,
-      10:true,
+      
       11:true,
-      12:true,
+      
 
      
       24: true,
-      60: true, 
-      61:true,
-      62:true,
-      63:true,
-      64:true,
-      100: true,
+     
     }
   }
   show(){
@@ -225,7 +225,7 @@ class AlienBullet{
     let absDif = Math.abs(xDif) + Math.abs(yDif);
     this.xDir =   xDif/absDif;
     this.yDir =   yDif/absDif;
-    console.log(this.xDir)
+    // console.log(this.xDir)
   }
   show(){
     fill(150,55,55);
@@ -274,7 +274,7 @@ class Bullet{
     this.xDir =   xDif/absDif;
     this.yDir =   yDif/absDif;
 
-    console.log("bullet x ratio", this.xDir, "bullet y ratio", this.yDir);
+    // console.log("bullet x ratio", this.xDir, "bullet y ratio", this.yDir);
     
 
   }
@@ -411,16 +411,7 @@ function draw() {
         }
       }
 
-    if(frameCount % 269 === 0 ){
-        //Moves and shows the alien bullets
-      for(let i = 0; i < alienBullets.length; i++) {
-        alienBullets[i].show();
-        alienBullets[i].move();
-        alienBullets[i].deathTimerCheck();
-      
-      }
 
-    }else{
       for(let i = 0; i < alienBullets.length; i++) {
         alienBullets[i].show();
         alienBullets[i].move();
@@ -428,17 +419,20 @@ function draw() {
       
       }
 
+    if(frameCount % 200 === 0 ){
+        //Moves and shows the alien bullets
+      
+
+      for(let i = alienBullets.length-1; i >= 0 ; i--) {
+        alienBullets[i].deathTimerCheck();
+
+        //instead of iterating through the whole bullets array, I can just slice off the front half?
+      
+      }
+
     }
     
     
-  
-  // }else{
-  //     for (let i = 0; i < aliens.length; i++) {
-  //       aliens[i].show();
-  //       aliens[i].shoot()
-  //     }
-  
-  // };
 
   
     
