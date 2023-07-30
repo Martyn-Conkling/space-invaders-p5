@@ -67,7 +67,46 @@ class Ball {
     // For aditional optimization, for walls that span the whole width or height of the play area, the effectively just shrink the play area
     // This allows us to have much cheaper collision detection, but we have to structure this correctly
     
-    checkCollision(other) {
+  checkCollisionStaticV(other){
+    let distanceVect = p5.Vector.sub(other.position, this.position);
+    
+    let distanceVectMag = distanceVect.mag();
+   
+    let minDistance = this.r + other.r;
+
+    if (distanceVectMag < minDistance) {
+
+      console.log("distanceVect: ",distanceVect);
+      console.log("distanceVectMag: ", distanceVectMag);
+
+      let collisionNormal = distanceVect.copy().normalize();
+
+      // Store the original speeds
+      let thisOriginalSpeed = this.velocity.mag();
+      let otherOriginalSpeed = other.velocity.mag();
+
+      // Get the components of the velocity vectors in the direction of the normal
+      let thisNormalSpeed = this.velocity.dot(collisionNormal);
+      let otherNormalSpeed = other.velocity.dot(collisionNormal);
+
+      // Calculate the new velocities, but only the components in the direction of the normal
+      let thisNewVel = p5.Vector.sub(this.velocity, p5.Vector.mult(collisionNormal, thisNormalSpeed - otherNormalSpeed));
+      let otherNewVel = p5.Vector.sub(other.velocity, p5.Vector.mult(collisionNormal, otherNormalSpeed - thisNormalSpeed));
+
+      // Set the new velocities
+      this.velocity = thisNewVel;
+      other.velocity = otherNewVel;
+
+      // Preserve the original speeds
+      this.velocity.setMag(thisOriginalSpeed);
+      other.velocity.setMag(otherOriginalSpeed);
+    }
+      
+  }
+
+
+
+    checkCollisionPhysics(other) {
       // Get distances between the balls components
       let distanceVect = p5.Vector.sub(other.position, this.position);
   
@@ -314,7 +353,7 @@ function draw(){
         b.checkBoundaryCollision();  
         for(let j = 0; j < ballsArray.length-1; j++){
             for(let k = j+1; k < ballsArray.length; k++){
-                ballsArray[j].checkCollision(ballsArray[k])
+                ballsArray[j].checkCollisionStaticV(ballsArray[k])
     
             }
         }
