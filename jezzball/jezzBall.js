@@ -35,7 +35,7 @@ class Ball {
     constructor(x, y, r) {
       this.position = new p5.Vector(x, y);
       this.velocity = p5.Vector.random2D();
-      this.velocity.mult(10);
+      this.velocity.mult(5);
       this.r = r;
       this.m = r * 0.1;
     }
@@ -81,12 +81,16 @@ class Ball {
 
       let collisionNormal = distanceVect.copy().normalize();
 
-      // Calculate the overlap between balls
-      let overlap = (minDistance - distanceVectMag) / 2.0;
+      // need some way to reduce clumping
+      let overlap = 0.5 * (distanceVectMag - minDistance);
 
-      // Move the balls away from each other by half the overlap each
-      this.position.add(p5.Vector.mult(collisionNormal, overlap));
-      other.position.sub(p5.Vector.mult(collisionNormal, overlap));
+      // Displace current ball
+      this.position.x -= overlap * (this.position.x - other.position.x) / distanceVectMag;
+      this.position.y -= overlap * (this.position.y - other.position.y) / distanceVectMag;
+    
+      // Displace other ball
+      other.position.x += overlap * (this.position.x - other.position.x) / distanceVectMag;
+      other.position.y += overlap * (this.position.y - other.position.y) / distanceVectMag;
 
       // Store the original speeds
       let thisOriginalSpeed = this.velocity.mag();
@@ -107,6 +111,9 @@ class Ball {
       // Preserve the original speeds
       this.velocity.setMag(thisOriginalSpeed);
       other.velocity.setMag(otherOriginalSpeed);
+
+      
+
     }
       
   }
@@ -283,7 +290,7 @@ class ArrowWall{
 
 function setup(){
 createCanvas(1500,1500);
-frameRate(30);
+frameRate(48);
 
 // Creating the Boarder Walls
 //Top Wall
@@ -332,9 +339,9 @@ for(let i =1; i < boardHeight-1; i++){
 
     };
 };
-let r = 10;
-for(let i = 0; i < 30; i++){
-  ballsArray.push(new Ball(boardStartX+gridSquareSize+r+random(0,(23*gridSquareSize - r) ), boardStartY+gridSquareSize+r+ random(0,(15*gridSquareSize -r)), r))
+let r = 20;
+for(let i = 1; i < 11; i++){
+  ballsArray.push(new Ball((boardStartX+gridSquareSize+((r+50)*i)), (boardStartY+gridSquareSize+r*2) , r));
 
 }
 
