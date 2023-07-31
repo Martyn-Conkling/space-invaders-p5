@@ -81,6 +81,13 @@ class Ball {
 
       let collisionNormal = distanceVect.copy().normalize();
 
+      // Calculate the overlap between balls
+      let overlap = (minDistance - distanceVectMag) / 2.0;
+
+      // Move the balls away from each other by half the overlap each
+      this.position.add(p5.Vector.mult(collisionNormal, overlap));
+      other.position.sub(p5.Vector.mult(collisionNormal, overlap));
+
       // Store the original speeds
       let thisOriginalSpeed = this.velocity.mag();
       let otherOriginalSpeed = other.velocity.mag();
@@ -325,10 +332,12 @@ for(let i =1; i < boardHeight-1; i++){
 
     };
 };
+let r = 10;
+for(let i = 0; i < 30; i++){
+  ballsArray.push(new Ball(boardStartX+gridSquareSize+r+random(0,(23*gridSquareSize - r) ), boardStartY+gridSquareSize+r+ random(0,(15*gridSquareSize -r)), r))
 
-ballsArray.push(new Ball(boardStartX+gridSquareSize+50, boardStartY+gridSquareSize+50, 20))
-ballsArray.push(new Ball(boardStartX+gridSquareSize+100, boardStartY+gridSquareSize+80, 20))
-ballsArray.push(new Ball(boardStartX+gridSquareSize+200, boardStartY+gridSquareSize+80, 20))
+}
+
 
 }
 
@@ -346,22 +355,49 @@ function draw(){
 
     }
 
+    
+
+
+
     for (let i = 0; i < ballsArray.length; i++) {
         let b = ballsArray[i];
         b.update();
         b.display();
         b.checkBoundaryCollision();  
-        for(let j = 0; j < ballsArray.length-1; j++){
-            for(let k = j+1; k < ballsArray.length; k++){
-                ballsArray[j].checkCollisionStaticV(ballsArray[k])
-    
-            }
-        }
+
+      //Pairwise comparison to check for collisions between all of the balls
+        for(let j = i+1; j < ballsArray.length; j++){
+          ballsArray[i].checkCollisionStaticV(ballsArray[j])
+
+      }
+
+        
      }
 
-    //   ballsArray[0].checkCollision(ballsArray[1]);
-    //   ballsArray[0].checkCollision(ballsArray[2]);
-    //   ballsArray[]
+     
+
+
+
+
+
+    
+    
     
 
+}
+
+
+// large number of elements collision detection optimizations.
+
+function sweepAndPruneCollisionCheck(){
+
+  //Sort all balls by one axis
+  ballsArray.sort((a ,b) => a.position.x - b.position.x)
+
+}
+
+
+
+function uniformGridPartitionCollisionCheck(){
+  //You must create a grid sub-dividing the game area into sections
 }
