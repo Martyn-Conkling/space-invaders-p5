@@ -1,62 +1,88 @@
-let boardStartX = 200;
-let boardStartY = 200;
+let defaultSettings = {
+  score: 0,
+  boardStartX: 0,
+  boardStartY: 0,
+  gridSquareSize: 40,
 
-
-let gridSquareSize = 35;
-
-let boardHeight = 17;
-let boardWidth = 25;
-
-let boardArray = [];
-let ballsArray = [];
-
-
-let playAreaWidth = boardStartX+ ((boardWidth-1) * gridSquareSize)
-let playAreaHeight = boardStartY + ((boardHeight-1) * gridSquareSize) ;
-let playAreaXStart  = boardStartX + gridSquareSize;
-let playAreaYStart = boardStartY + gridSquareSize;
+}
 
 class Game{
-    constructor(){
+  constructor(){
     this.score = 0;
 
+    this.boardStartX = 0;
+    this.boardStartY = 0;
+
+  
+    this.boardHeight = 17;  
+    this.boardWidth = 25;
+
+    this.boardArray = [];
+    this.ballsArray = [];
+
+    this.gridSquareSize = 60;
+
+    this.boardHeight = 17;
+    this.boardWidth = 25;
+
+    this.boardArray = [];
+    this.ballsArray = [];
+
+
+    this.playAreaWidth = this.boardStartX + ((this.boardWidth-1) * this.gridSquareSize)
+    this.playAreaHeight = this.boardStartY + ((this.boardHeight-1) * this.gridSquareSize) ;
+    this.playAreaXStart  = this.boardStartX + this.gridSquareSize;
+    this.playAreaYStart = this.boardStartY + this.gridSquareSize;
+
+    this.defaultBallRadius = 20;
+    this.defaultBallVelocity = 10;
+    this.startingAmountOfBalls = 11
+
+}
+
+showGameUI(){
+  //This method will show all of the UI and game data
+
 }
 
 
 
 }
+
+let game = new Game();
 
 class Level{
 
 }
 
-
-class Ball {
-    constructor(x, y, r) {
+class Ball{
+    constructor(x, y, r, v) {
       this.position = new p5.Vector(x, y);
       this.velocity = p5.Vector.random2D();
-      this.velocity.mult(5);
+      this.velocity.mult(v);
       this.r = r;
+
+
       this.m = r * 0.1;
     }
     update() {
       this.position.add(this.velocity);
     }
   
-    checkBoundaryCollision() {
-      if (this.position.x > playAreaWidth - this.r) {
-        this.position.x = playAreaWidth - this.r;
+    checkBoundaryCollision(gameObj) {
+      if (this.position.x > gameObj.playAreaWidth - this.r ) {
+        this.position.x = gameObj.playAreaWidth - this.r;
         this.velocity.x *= -1;
-      }else if (this.position.x < (playAreaXStart + this.r)) {
-        this.position.x = (playAreaXStart +this.r);
+      }else if (this.position.x < (gameObj.playAreaXStart + this.r)) {
+        this.position.x = (gameObj.playAreaXStart +this.r);
         this.velocity.x *= -1;
       }
 
-      if (this.position.y > playAreaHeight - this.r) {
-        this.position.y = playAreaHeight - this.r;
+      if (this.position.y > gameObj.playAreaHeight - this.r) {
+        this.position.y = gameObj.playAreaHeight - this.r;
         this.velocity.y *= -1;
-      } else if (this.position.y <(playAreaYStart + this.r)) {
-        this.position.y = (playAreaYStart + this.r);
+      } else if (this.position.y <(gameObj.playAreaYStart + this.r)) {
+        this.position.y = (gameObj.playAreaYStart + this.r);
         this.velocity.y *= -1;
       }
     }
@@ -75,7 +101,7 @@ class Ball {
     let minDistance = this.r + other.r;
 
     if (distanceVectMag < minDistance) {
-
+      //look into this function to see if there are any other optimizations in calculation
       console.log("distanceVect: ",distanceVect);
       console.log("distanceVectMag: ", distanceVectMag);
 
@@ -111,8 +137,6 @@ class Ball {
       // Preserve the original speeds
       this.velocity.setMag(thisOriginalSpeed);
       other.velocity.setMag(otherOriginalSpeed);
-
-      
 
     }
       
@@ -215,7 +239,7 @@ class Ball {
       fill(100,5,70);
       ellipse(this.position.x, this.position.y, this.r * 2, this.r * 2);
     }
-  }
+}
 
 class GridSquare{
     constructor(type="empty",x,y,size,isWall ){
@@ -279,6 +303,21 @@ class ArrowMouse{
 }
 
 class ArrowWall{
+  constructor(mouseX,mouseY){
+
+    //calculate the grid that the mouse is currently in based on its location and other variables
+    game.gridSquareSize
+    game.boardStartX
+    game.boardStartY
+
+    // get the grid element for where to start the red wall
+    gridRedStart = 0;
+
+    //get the grid element for where to start the blue wall
+    gridBlueStart =0;
+
+  }
+
 
 }
 
@@ -288,122 +327,93 @@ class ArrowWall{
 // make squares class so that when we click inside a square position on the screen we know what square we are in
 //boarder wall
 
+
+
 function setup(){
-createCanvas(1500,1500);
-frameRate(48);
+  createCanvas(1600,1600);
+  frameRate(48);
+
 
 // Creating the Boarder Walls
 //Top Wall
-boardArray.push([]);
-for(let i=0; i < boardWidth; i++){
-    boardArray[0].push(new GridSquare("greyWall",
-                                    (i*gridSquareSize)+boardStartX,
-                                    boardStartY,
-                                    gridSquareSize,
-                                    true));
-}
+  game.boardArray.push([]);
+  for(let i=0; i < game.boardWidth; i++){
+      game.boardArray[0].push(new GridSquare("greyWall",
+                                    (i*game.gridSquareSize)+game.boardStartX,
+                                    game.boardStartY,
+                                    game.gridSquareSize,
+                                    true));}
 //Right Wall
-for(let i=1; i < boardHeight-1; i++){
-    boardArray[0].push(new GridSquare("greyWall",
-                                    ((boardWidth-1)*gridSquareSize)+boardStartX,
-                                    (i*gridSquareSize) +boardStartY,
-                                    gridSquareSize,
-                                    true));
-}
+for(let i=1; i < game.boardHeight-1; i++){
+  game.boardArray[0].push(new GridSquare("greyWall",
+                                    ((game.boardWidth-1)*game.gridSquareSize)+game.boardStartX,
+                                    (i*game.gridSquareSize) +game.boardStartY,
+                                    game.gridSquareSize,
+                                    true));}
 //Bottom Wall
-for(let i = 0; i < boardWidth; i++){
-    boardArray[0].push(new GridSquare("greyWall",
-                                    (i*gridSquareSize)+boardStartX,
-                                    ((boardHeight-1)*gridSquareSize) + boardStartY,
-                                    gridSquareSize,
-                                    true));
-}
+for(let i = 0; i < game.boardWidth; i++){
+  game.boardArray[0].push(new GridSquare("greyWall",
+                                    (i*game.gridSquareSize)+game.boardStartX,
+                                    ((game.boardHeight-1)*game.gridSquareSize) + game.boardStartY,
+                                    game.gridSquareSize,
+                                    true));}
 //Left Wall
-for(let i=1; i < boardHeight-1; i++){
-    boardArray[0].push(new GridSquare("greyWall",
-                                    boardStartX,
-                                    (i*gridSquareSize)+boardStartY,
-                                    gridSquareSize,
-                                    true));
-}
+for(let i=1; i < game.boardHeight-1; i++){
+  game.boardArray[0].push(new GridSquare("greyWall",
+                                          game.boardStartX,
+                                        (i*game.gridSquareSize)+game.boardStartY,
+                                        game.gridSquareSize,
+                                        true));}
 
 
-for(let i =1; i < boardHeight-1; i++){
-    boardArray.push([]);
-    for(let j =1; j < boardWidth-1; j++){
-         boardArray[i].push(new GridSquare("empty",
-                                        j*gridSquareSize+boardStartX,
-                                        i*gridSquareSize + boardStartY,
-                                        gridSquareSize,
+for(let i =1; i < game.boardHeight-1; i++){
+    game.boardArray.push([]);
+    for(let j =1; j < game.boardWidth-1; j++){
+      game.boardArray[i].push(new GridSquare("empty",
+                                        j*game.gridSquareSize+game.boardStartX,
+                                        i*game.gridSquareSize + game.boardStartY,
+                                        game.gridSquareSize,
                                         false));
-
-    };
+  };
 };
-let r = 20;
-for(let i = 1; i < 11; i++){
-  ballsArray.push(new Ball((boardStartX+gridSquareSize+((r+50)*i)), (boardStartY+gridSquareSize+r*2) , r));
 
-}
+for(let i = 1; i <= game.startingAmountOfBalls; i++){
+  game.ballsArray.push(new Ball((game.boardStartX+game.gridSquareSize+((game.defaultBallRadius+50)*i)), (game.boardStartY+game.gridSquareSize+game.defaultBallRadius*2) , game.defaultBallRadius, game.defaultBallVelocity));
+
+};
 
 
 }
 
 function draw(){
-    background(0);
+  background(0);  
+  //This is iterating through the boardArray and calling the .show() method on all of the elements in the array
+  //This means all of these elements need to have a show() method built into them  
+  for(let i =0; i < game.boardArray.length; i++){
+        for(let j=0; j < game.boardArray[i].length; j++){
+            game.boardArray[i][j].show();
+        };
+  };
 
+  for (let i = 0; i < game.ballsArray.length; i++) {
+    let b = game.ballsArray[i];
+    b.update();
+    b.display();
+    b.checkBoundaryCollision(game);  
+
+    //Pairwise comparison to check for collisions between all of the balls
+    for(let j = i+1; j < game.ballsArray.length; j++){
+      game.ballsArray[i].checkCollisionStaticV(game.ballsArray[j]);
     
-    //This is iterating through the boardArray and calling the .show() method on all of the elements in the array
-    //This means all of these elements need to have a show() method built into them
-    
-    for(let i =0; i < boardArray.length; i++){
-        for(let j=0; j < boardArray[i].length; j++){
-            boardArray[i][j].show();
-        }
-
-    }
-
-    
-
-
-
-    for (let i = 0; i < ballsArray.length; i++) {
-        let b = ballsArray[i];
-        b.update();
-        b.display();
-        b.checkBoundaryCollision();  
-
-      //Pairwise comparison to check for collisions between all of the balls
-        for(let j = i+1; j < ballsArray.length; j++){
-          ballsArray[i].checkCollisionStaticV(ballsArray[j])
-
-      }
-
-        
-     }
-
-     
-
-
-
-
-
-    
-    
-    
-
-}
-
+    };
+  };
+};
 
 // large number of elements collision detection optimizations.
-
 function sweepAndPruneCollisionCheck(){
-
   //Sort all balls by one axis
-  ballsArray.sort((a ,b) => a.position.x - b.position.x)
-
+  ballsArray.sort((a ,b) => a.position.x - b.position.x);
 }
-
-
 
 function uniformGridPartitionCollisionCheck(){
   //You must create a grid sub-dividing the game area into sections
