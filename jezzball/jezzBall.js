@@ -310,11 +310,21 @@ class ArrowWall{
     game.boardStartX
     game.boardStartY
 
+    //Need to make this a value
+    game.wallOrientation
+
+    this.x = 0
+    this.y = 0
     // get the grid element for where to start the red wall
     gridRedStart = 0;
 
     //get the grid element for where to start the blue wall
     gridBlueStart =0;
+
+  }
+
+  update(){
+    
 
   }
 
@@ -327,60 +337,78 @@ class ArrowWall{
 // make squares class so that when we click inside a square position on the screen we know what square we are in
 //boarder wall
 
+function createBoard(game){
 
-
-function setup(){
-  createCanvas(1600,1600);
-  frameRate(48);
-
-
-// Creating the Boarder Walls
-//Top Wall
   game.boardArray.push([]);
+  //Top Wall
   for(let i=0; i < game.boardWidth; i++){
-      game.boardArray[0].push(new GridSquare("greyWall",
-                                    (i*game.gridSquareSize)+game.boardStartX,
-                                    game.boardStartY,
-                                    game.gridSquareSize,
-                                    true));}
-//Right Wall
-for(let i=1; i < game.boardHeight-1; i++){
-  game.boardArray[0].push(new GridSquare("greyWall",
-                                    ((game.boardWidth-1)*game.gridSquareSize)+game.boardStartX,
-                                    (i*game.gridSquareSize) +game.boardStartY,
-                                    game.gridSquareSize,
-                                    true));}
-//Bottom Wall
-for(let i = 0; i < game.boardWidth; i++){
-  game.boardArray[0].push(new GridSquare("greyWall",
-                                    (i*game.gridSquareSize)+game.boardStartX,
-                                    ((game.boardHeight-1)*game.gridSquareSize) + game.boardStartY,
-                                    game.gridSquareSize,
-                                    true));}
-//Left Wall
-for(let i=1; i < game.boardHeight-1; i++){
-  game.boardArray[0].push(new GridSquare("greyWall",
-                                          game.boardStartX,
-                                        (i*game.gridSquareSize)+game.boardStartY,
-                                        game.gridSquareSize,
-                                        true));}
+      game.boardArray[0].push(
+      new GridSquare(
+      "greyWall",
+      (i*game.gridSquareSize)+game.boardStartX,
+      game.boardStartY,
+      game.gridSquareSize,
+      true));
+  };
+  //Right Wall
+  for(let i=1; i < game.boardHeight-1; i++){
+      game.boardArray[0].push(
+      new GridSquare("greyWall",
+      ((game.boardWidth-1)*game.gridSquareSize)+game.boardStartX,
+      (i*game.gridSquareSize) +game.boardStartY,
+      game.gridSquareSize,
+      true));
+  };
+  //Bottom Wall
+  for(let i = 0; i < game.boardWidth; i++){
+    game.boardArray[0].push(
+    new GridSquare(
+    "greyWall",
+    (i*game.gridSquareSize)+game.boardStartX,
+    ((game.boardHeight-1)*game.gridSquareSize) + game.boardStartY,
+    game.gridSquareSize,
+    true));
+  }
+  //Left Wall
+  for(let i=1; i < game.boardHeight-1; i++){
+    game.boardArray[0].push(
+    new GridSquare(
+    "greyWall",
+    game.boardStartX,
+    (i*game.gridSquareSize)+game.boardStartY,
+    game.gridSquareSize,
+    true));
+  }
 
-
-for(let i =1; i < game.boardHeight-1; i++){
+  //Creating the empty grid spaces based on # or rows and columns set in the game object
+  for(let i =1; i < game.boardHeight-1; i++){
     game.boardArray.push([]);
     for(let j =1; j < game.boardWidth-1; j++){
       game.boardArray[i].push(new GridSquare("empty",
                                         j*game.gridSquareSize+game.boardStartX,
                                         i*game.gridSquareSize + game.boardStartY,
                                         game.gridSquareSize,
-                                        false));
+                                        false));};
+};
+
+  //This is bad, change this
+  //Creates the starting # of balls
+  for(let i = 1; i <= game.startingAmountOfBalls; i++){
+  game.ballsArray.push(new Ball((game.boardStartX+game.gridSquareSize+((game.defaultBallRadius+50)*i)),
+                               (game.boardStartY+game.gridSquareSize+game.defaultBallRadius*2),
+                                game.defaultBallRadius, game.defaultBallVelocity));
   };
-};
 
-for(let i = 1; i <= game.startingAmountOfBalls; i++){
-  game.ballsArray.push(new Ball((game.boardStartX+game.gridSquareSize+((game.defaultBallRadius+50)*i)), (game.boardStartY+game.gridSquareSize+game.defaultBallRadius*2) , game.defaultBallRadius, game.defaultBallVelocity));
+}
 
-};
+function setup(){
+  createCanvas(1600,1600);
+  frameRate(48);
+
+  createBoard(game)
+// Creating the Boarder Walls
+//Top Wall
+ 
 
 
 }
@@ -418,3 +446,8 @@ function sweepAndPruneCollisionCheck(){
 function uniformGridPartitionCollisionCheck(){
   //You must create a grid sub-dividing the game area into sections
 }
+
+
+
+// Notes Section
+// https://github.com/processing/p5.js/wiki/Optimizing-p5.js-Code-for-Performance#words-of-caution
